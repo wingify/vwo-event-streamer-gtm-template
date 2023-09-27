@@ -14,7 +14,10 @@ ___INFO___
   "version": 1,
   "securityGroups": [],
   "displayName": "VWO Event Streamer",
-  "categories": ["EXPERIMENTATION", "ANALYTICS"],
+  "categories": [
+    "EXPERIMENTATION",
+    "ANALYTICS"
+  ],
   "brand": {
     "id": "vwo",
     "displayName": "VWO",
@@ -70,9 +73,16 @@ const copyFromWindow = require("copyFromWindow");
 const createQueue = require("createQueue");
 
 function isEventNameReserved(eventName) {
-  const array = data.reservedEventNames || [];
+  const defaultEvents = ["gtm.dom", "gtm.load", "gtm.js"];
+  const rawReservedNames = data.reservedEventNames || [];
+  const reservedNames = [];
+  for (let i = 0; i < rawReservedNames.length; i++) {
+    reservedNames.push(rawReservedNames[i].eventName);
+  }
+  const array = defaultEvents.concat(reservedNames);
+  
   for (let i = 0; i < array.length; i++) {
-    if (array[i].eventName.trim() === eventName.trim()) {
+    if (array[i].trim() === eventName.trim()) {
       return true;
     }
   }
@@ -106,14 +116,15 @@ function getCurrentEventObject() {
     "gtm.uniqueEventId",
     eventID
   );
-  if (object && object.event && object.event.slice(0,4) == 'gtm.' ){
+  if (!object || !object.event) { 
     return null;
-  } else {
-    if (isEventNameReserved(object.event)) {
-      return null;
-    }
-    return object; 
   }
+  
+  if (isEventNameReserved(object.event)) {
+    return null;
+  }
+
+    return object; 
 }
 
 function buildVwoPayload(obj) {
@@ -122,7 +133,6 @@ function buildVwoPayload(obj) {
   const vwoMeta = {
     source: "gtm"
   };
-
   for (const key in obj) {
     if (key === "gtm.uniqueEventId") {
       continue;
@@ -132,7 +142,11 @@ function buildVwoPayload(obj) {
       const value = obj[key];
 
       if (key === "event") {
-        eventName = "gtm." + value;
+        if (value.slice(0,4) == 'gtm.') {
+          eventName = value;
+        } else {
+          eventName = "gtm." + value;
+        }
         vwoMeta.ogName = value;
       } else {
         if (!isPropertyExcluded(key)){
