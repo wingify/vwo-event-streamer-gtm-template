@@ -71,6 +71,7 @@ ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 const copyFromDataLayer = require("copyFromDataLayer");
 const copyFromWindow = require("copyFromWindow");
 const createQueue = require("createQueue");
+const getType = require("getType");
 
 function isEventNameReserved(eventName) {
   const defaultEvents = ["gtm.dom", "gtm.load", "gtm.js"];
@@ -101,7 +102,7 @@ function isPropertyExcluded(property) {
 
 function findObjectByProperty(array, property, value) {
   for (let i = 0; i < array.length; i++) {
-    if (array[i][property] === value) {
+    if (array[i] && getType(array[i]) == 'object' && array[i][property] === value) {
       return array[i];
     }
   }
@@ -116,6 +117,7 @@ function getCurrentEventObject() {
     "gtm.uniqueEventId",
     eventID
   );
+  
   if (!object || !object.event) { 
     return null;
   }
@@ -164,7 +166,7 @@ function buildVwoPayload(obj) {
 }
 
 const DLObject = getCurrentEventObject();
-if (DLObject) {
+if (DLObject != null) {
   const VWOPayload = buildVwoPayload(DLObject);
   if (VWOPayload) {
     const vwoPush = createQueue("VWO");
