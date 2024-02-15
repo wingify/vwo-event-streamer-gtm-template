@@ -1,6 +1,8 @@
 homepage: "https://vwo.com"
 documentation: "https://help.vwo.com/hc/en-us/articles/15595250852761-Integrating-VWO-with-Google-Tag-Manager-GTM-"
 versions:
+  - sha: 5c69e681fd35cfcfaaa89ccc25c883bc7926a126
+    changeNotes: Add support for custom dataLayer variable names.
   - sha: 8ae4c61994fc222336429a81488e362e08ad8a41
     changeNotes: Fixes "Exception thrown" issue in the template.
   - sha: 264b1b27955c14f79c4f3be12b4203fce3cecda1
