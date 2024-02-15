@@ -68,6 +68,8 @@ ___TEMPLATE_PARAMETERS___
 
 ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
+const DATALAYER_VARIABLE_NAME = "dataLayer";
+
 const copyFromDataLayer = require("copyFromDataLayer");
 const copyFromWindow = require("copyFromWindow");
 const createQueue = require("createQueue");
@@ -111,7 +113,7 @@ function findObjectByProperty(array, property, value) {
 
 function getCurrentEventObject() {
   const eventID = copyFromDataLayer("gtm.uniqueEventId");
-  const dataLayerVar = copyFromWindow("dataLayer");
+  const dataLayerVar = copyFromWindow(DATALAYER_VARIABLE_NAME);
   const object = findObjectByProperty(
     dataLayerVar,
     "gtm.uniqueEventId",
@@ -287,6 +289,13 @@ ___WEB_PERMISSIONS___
         "versionId": "1"
       },
       "param": [
+        {
+          "key": "allowedKeys",
+          "value": {
+            "type": 1,
+            "string": "specific"
+          }
+        },
         {
           "key": "keyPatterns",
           "value": {
