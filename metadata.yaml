@@ -1,6 +1,9 @@
 homepage: "https://vwo.com"
 documentation: "https://help.vwo.com/hc/en-us/articles/15595250852761-Integrating-VWO-with-Google-Tag-Manager-GTM-"
 versions:
+  - sha: 1b5be111f3a1ff2e1104b783afae516cf99ee06e
+    changeNotes: Add support for gtag event.
+      Add support for Nested JSON property. 
   - sha: 5c69e681fd35cfcfaaa89ccc25c883bc7926a126
     changeNotes: Add support for custom dataLayer variable names.
   - sha: 8ae4c61994fc222336429a81488e362e08ad8a41
