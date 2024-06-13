@@ -35,8 +35,56 @@ ___TEMPLATE_PARAMETERS___
 [
   {
     "type": "SIMPLE_TABLE",
+    "name": "nestedFieldsMapping",
+    "displayName": "Nested JSON Field Mapping",
+    "simpleTableColumns": [
+      {
+        "defaultValue": "",
+        "displayName": "Property  Name",
+        "name": "json_key_name",
+        "type": "TEXT",
+        "isUnique": true,
+        "valueHint": "E.g., revenue"
+      },
+      {
+        "defaultValue": "",
+        "displayName": "JSON Key Path",
+        "name": "json_key_path",
+        "type": "TEXT",
+        "isUnique": true,
+        "valueHint": "E.g., ecommerce.purchase.actionfield.revenue"
+      }
+    ],
+    "newRowButtonText": "+ Add Field Mapping",
+    "help": "Specify the name and path of the nested property within the event you want to send to VWO."
+  },
+  {
+    "type": "SIMPLE_TABLE",
+    "name": "customProperties",
+    "displayName": "Custom Property",
+    "simpleTableColumns": [
+      {
+        "defaultValue": "",
+        "displayName": "Property Name",
+        "name": "property_name",
+        "type": "TEXT",
+        "isUnique": true
+      },
+      {
+        "defaultValue": "",
+        "displayName": "Property Value",
+        "name": "property_value",
+        "type": "TEXT",
+        "isUnique": true
+      }
+    ],
+    "newRowButtonText": "+ Add Property",
+    "help": "Specify the name and value of the custom property within the event you want to send to VWO."
+  },
+  {
+    "type": "SIMPLE_TABLE",
     "name": "reservedEventNames",
-    "displayName": "Exclude following events",
+    "displayName": "Exclude the following events",
     "simpleTableColumns": [
       {
         "defaultValue": "",
@@ -45,13 +93,13 @@ ___TEMPLATE_PARAMETERS___
         "type": "TEXT"
       }
     ],
-    "newRowButtonText": "+ Add another event",
+    "newRowButtonText": "+ Add Event",
     "help": "Events you add here will not be sent to VWO while streaming events."
   },
   {
     "type": "SIMPLE_TABLE",
     "name": "reservedProperties",
-    "displayName": "Exclude following properties",
+    "displayName": "Exclude the following properties",
     "simpleTableColumns": [
       {
         "defaultValue": "",
@@ -61,7 +109,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "help": "Properties you add here will not be sent to VWO while streaming events.",
-    "newRowButtonText": "+ Add another property"
+    "newRowButtonText": "+ Add Property"
   }
 ]
 
@@ -74,6 +122,18 @@ const copyFromDataLayer = require("copyFromDataLayer");
 const copyFromWindow = require("copyFromWindow");
 const createQueue = require("createQueue");
 const getType = require("getType");
+const logToConsole = require("logToConsole");
+const JSON = require('JSON');
+const queryPermission = require('queryPermission');
+const getUrl = require('getUrl');
+const makeInteger = require('makeInteger');
+const getTimestampMillis = require('getTimestampMillis');
+
+let debug = false;
+
+if (debug) logToConsole("Debugging is enabled.");
+
+logToConsole("\n\n----------" + getTimestampMillis() + "\n");
 
 function isEventNameReserved(eventName) {
   const defaultEvents = ["gtm.dom", "gtm.load", "gtm.js"];
@@ -111,14 +171,37 @@ function findObjectByProperty(array, property, value) {
   return null;
 }
 
+function checkGtagObject(){
+  const eventModel = copyFromDataLayer("eventModel");
+  if (debug) logToConsole("Found Event model", eventModel );
+  return (getType(eventModel) != "undefined");
+}
+
+function getGtagObject(){
+  let object = {};
+  object.event = copyFromDataLayer("event");
+  const eventmodel = copyFromDataLayer("eventModel");
+  for (var attrName in eventmodel) { object[attrName] = eventmodel[attrName]; }
+  return object;
+}
+
 function getCurrentEventObject() {
-  const eventID = copyFromDataLayer("gtm.uniqueEventId");
-  const dataLayerVar = copyFromWindow(DATALAYER_VARIABLE_NAME);
-  const object = findObjectByProperty(
-    dataLayerVar,
-    "gtm.uniqueEventId",
-    eventID
-  );
+  let object ={};
+  if(checkGtagObject()){
+    object = getGtagObject();
+    if (debug) logToConsole("Found gtag Object", object);
+  } else {
+    const eventID = copyFromDataLayer("gtm.uniqueEventId");
+    const dataLayerVar = copyFromWindow(DATALAYER_VARIABLE_NAME);
+    object = findObjectByProperty(
+      dataLayerVar,
+      "gtm.uniqueEventId",
+      eventID
+    );
+    if (debug) logToConsole("Found Event ID", eventID);
+    if (debug) logToConsole("Found GTM dataLayer Object", object);
+  }
+
   
   if (!object || !object.event) { 
     return null;
@@ -128,25 +211,47 @@ function getCurrentEventObject() {
     return null;
   }
 
-    return object; 
+  return object; 
 }
 
-function buildVwoPayload(obj) {
+function getValueByPath(obj, path) {
+  const parts = path.split('.');
+  let current = obj;
+  for (let i = 0; i < parts.length; i++) {
+    if (getType(current) == 'array') {
+      const index = makeInteger(parts[i]);
+      if ( getType(index) != 'number' || index < 0 || index >= current.length) {
+        return undefined;
+      }
+      current = current[index];
+    } else {
+      if (current[parts[i]] === undefined) {
+        return undefined;
+      }
+      current = current[parts[i]];
+    }
+  }
+  return current;
+}
+
+
+function buildVwoPayload(obj, debug) {
   let eventName = "";
   const otherProperties = {};
   const vwoMeta = {
     source: "gtm"
   };
+  
   for (const key in obj) {
     if (key === "gtm.uniqueEventId") {
       continue;
     }
 
     if (obj.hasOwnProperty(key)) {
-      const value = obj[key];
+      const value = obj[key] || '';
 
       if (key === "event") {
-        if (value.slice(0,4) == 'gtm.') {
+        if (value.slice(0, 4) == 'gtm.') {
           eventName = value;
         } else {
           eventName = "gtm." + value;
@@ -160,6 +265,43 @@ function buildVwoPayload(obj) {
     }
   }
 
+  if (data.nestedFieldsMapping && getType(data.nestedFieldsMapping) === 'array') {
+    for (let i = 0; i < data.nestedFieldsMapping.length; i++) {
+      const mapping = data.nestedFieldsMapping[i];
+      const keyName = mapping.json_key_name;
+      const keyPath = mapping.json_key_path;
+      
+      if (keyName && keyPath && !otherProperties.hasOwnProperty(keyName)) {
+        const nestedValue = getValueByPath(obj, keyPath);
+        if (nestedValue !== undefined) {
+          otherProperties[keyName] = nestedValue;
+        }
+      } else if (!keyName || !keyPath) {
+        if (debug) logToConsole("Invalid mapping: " + JSON.stringify(mapping));
+      } else if (!obj.hasOwnProperty(keyPath)) {
+        if (debug) logToConsole("Key path not found in the object: " + keyPath);
+      }
+    }
+  } else {
+    if (debug) logToConsole("Invalid nestedFieldsMapping array.");
+  }
+
+  if (data.customProperties && getType(data.customProperties) === 'array') {
+    for (let i = 0; i < data.customProperties.length; i++) {
+      const customProp = data.customProperties[i];
+      const propName = customProp.property_name;
+      const propValue = customProp.property_value;
+      
+      if (propName && propValue && !otherProperties.hasOwnProperty(propName)) {
+        otherProperties[propName] = propValue;
+      } else {
+        if (debug) logToConsole("Invalid custom property: " + JSON.stringify(customProp));
+      }
+    }
+  } else {
+    if (debug) logToConsole("Invalid customProperties array.");
+  }
+
   return {
     event: eventName,
     props: otherProperties,
@@ -169,12 +311,17 @@ function buildVwoPayload(obj) {
 
 const DLObject = getCurrentEventObject();
 if (DLObject != null) {
-  const VWOPayload = buildVwoPayload(DLObject);
+  if (debug) logToConsole("Current event object: " + JSON.stringify(DLObject));
+  const VWOPayload = buildVwoPayload(DLObject, debug);
   if (VWOPayload) {
+    if (debug) logToConsole("VWO Payload: " + JSON.stringify(VWOPayload));
     const vwoPush = createQueue("VWO");
     vwoPush(["event", VWOPayload.event, VWOPayload.props, VWOPayload.vwoMeta]);
   }
 }
+
+if (debug) logToConsole("Nested Fields Mapping: " + JSON.stringify(data.nestedFieldsMapping));
+if (debug) logToConsole("Custom Properties: " + JSON.stringify(data.customProperties));
 
 data.gtmOnSuccess();
 
@@ -308,8 +455,61 @@ ___WEB_PERMISSIONS___
               {
                 "type": 1,
                 "string": "gtm.uniqueEventId"
+              },
+              {
+                "type": 1,
+                "string": "eventModel"
               }
             ]
+          }
+        }
+      ]
+    },
+    "clientAnnotations": {
+      "isEditedByUser": true
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "logging",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "environments",
+          "value": {
+            "type": 1,
+            "string": "debug"
+          }
+        }
+      ]
+    },
+    "clientAnnotations": {
+      "isEditedByUser": true
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "get_url",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "urlParts",
+          "value": {
+            "type": 1,
+            "string": "any"
+          }
+        },
+        {
+          "key": "queriesAllowed",
+          "value": {
+            "type": 1,
+            "string": "any"
           }
         }
       ]
@@ -330,3 +530,5 @@ scenarios: []
 ___NOTES___
 
 Created on 12/07/2023, 18:34:33
+
+
