@@ -215,7 +215,8 @@ function getCurrentEventObject() {
 }
 
 function getValueByPath(obj, path) {
-  const parts = path.split('.');
+  const sanitizedPath = path.split('[').join('.').split(']').join('');
+  const parts = sanitizedPath.split(".").filter(x => x.length); 
   let current = obj;
   for (let i = 0; i < parts.length; i++) {
     if (getType(current) == 'array') {
