@@ -133,7 +133,7 @@ let debug = false;
 
 if (debug) logToConsole("Debugging is enabled.");
 
-logToConsole("\n\n----------" + getTimestampMillis() + "\n");
+if (debug) logToConsole("\n\n----------" + getTimestampMillis() + "\n");
 
 function isEventNameReserved(eventName) {
   const defaultEvents = ["gtm.dom", "gtm.load", "gtm.js"];
