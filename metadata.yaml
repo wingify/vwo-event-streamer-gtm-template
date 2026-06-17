@@ -1,6 +1,8 @@
 homepage: "https://vwo.com"
 documentation: "https://help.vwo.com/hc/en-us/articles/15595250852761-Integrating-VWO-with-Google-Tag-Manager-GTM-"
 versions:
+  - sha: 2e47731ab05169276200c10e0b9fa4aceed23505
+    changeNotes: Add support for sending events for Feature Experiments (FE).
   - sha: 1b5be111f3a1ff2e1104b783afae516cf99ee06e
     changeNotes: Add support for gtag event.
       Add support for Nested JSON property. 
