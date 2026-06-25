@@ -236,10 +236,10 @@ function getValueByPath(obj, path) {
 }
 
 
-function buildVwoPayload(obj, debug) {
+function buildWingifyPayload(obj, debug) {
   let eventName = "";
   const otherProperties = {};
-  const vwoMeta = {
+  const wingifyMeta = {
     source: "gtm"
   };
   
@@ -257,7 +257,7 @@ function buildVwoPayload(obj, debug) {
         } else {
           eventName = "gtm." + value;
         }
-        vwoMeta.ogName = value;
+        wingifyMeta.ogName = value;
       } else {
         if (!isPropertyExcluded(key)){
           otherProperties[key] = value;
@@ -306,18 +306,18 @@ function buildVwoPayload(obj, debug) {
   return {
     event: eventName,
     props: otherProperties,
-    vwoMeta: vwoMeta
+    wingifyMeta: wingifyMeta
   };
 }
 
 const DLObject = getCurrentEventObject();
 if (DLObject != null) {
   if (debug) logToConsole("Current event object: " + JSON.stringify(DLObject));
-  const VWOPayload = buildVwoPayload(DLObject, debug);
-  if (VWOPayload) {
-    if (debug) logToConsole("Wingify Payload: " + JSON.stringify(VWOPayload));
-    const vwoPush = createQueue("Wingify");
-    vwoPush(["event", VWOPayload.event, VWOPayload.props, VWOPayload.vwoMeta]);
+  const WingifyPayload = buildWingifyPayload(DLObject, debug);
+  if (WingifyPayload) {
+    if (debug) logToConsole("Wingify Payload: " + JSON.stringify(WingifyPayload));
+    const wingifyPush = createQueue("Wingify");
+    wingifyPush(["event", WingifyPayload.event, WingifyPayload.props, WingifyPayload.wingifyMeta]);
   }
 }
 
@@ -404,7 +404,7 @@ ___WEB_PERMISSIONS___
                 "mapValue": [
                   {
                     "type": 1,
-                    "string": "VWO"
+                    "string": "Wingify"
                   },
                   {
                     "type": 8,
@@ -691,7 +691,7 @@ scenarios:
     assertApi('gtmOnSuccess').wasCalled();
     assertThat(queueCreated).isFalse();
 
-- name: Excluded property is removed from VWO payload props
+- name: Excluded property is removed from Wingify payload props
   code: |-
     let wingifyPush = null;
     mock('copyFromDataLayer', function(key) {
@@ -718,7 +718,7 @@ scenarios:
     assertThat(wingifyPush[2].userId).isUndefined();
     assertThat(wingifyPush[2].productId).isEqualTo('xyz789');
 
-- name: gtm uniqueEventId is always excluded from VWO payload props
+- name: gtm uniqueEventId is always excluded from Wingify payload props
   code: |-
     let wingifyPush = null;
     mock('copyFromDataLayer', function(key) {
@@ -813,7 +813,7 @@ scenarios:
     assertApi('gtmOnSuccess').wasCalled();
     assertThat(wingifyPush[2].firstProductName).isEqualTo('Widget Pro');
 
-- name: Custom properties are added to VWO payload
+- name: Custom properties are added to Wingify payload
   code: |-
     let wingifyPush = null;
     mock('copyFromDataLayer', function(key) {
