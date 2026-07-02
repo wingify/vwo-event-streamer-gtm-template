@@ -13,17 +13,17 @@ ___INFO___
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
-  "displayName": "VWO Event Streamer",
+  "displayName": "VWO (Wingify) Event Streamer",
   "categories": [
     "EXPERIMENTATION",
     "ANALYTICS"
   ],
   "brand": {
-    "id": "vwo",
-    "displayName": "VWO",
-    "thumbnail": "data:image/png;base64,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\u003d"
+    "id": "wingify",
+    "displayName": "VWO (Wingify)",
+    "thumbnail": "data:image/png;base64,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"
   },
-  "description": "Enables you to use all your GTM Events with VWO Data360.",
+  "description": "Enables you to use all your GTM Events with Wingify Data360.",
   "containerContexts": [
     "WEB"
   ]
@@ -56,7 +56,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "newRowButtonText": "+ Add Field Mapping",
-    "help": "Specify the name and path of the nested property within the event you want to send to VWO."
+    "help": "Specify the name and path of the nested property within the event you want to send to Wingify."
   },
   {
     "type": "SIMPLE_TABLE",
@@ -79,7 +79,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "newRowButtonText": "+ Add Property",
-    "help": "Specify the name and value of the custom property within the event you want to send to VWO."
+    "help": "Specify the name and value of the custom property within the event you want to send to Wingify."
   },
   {
     "type": "SIMPLE_TABLE",
@@ -94,7 +94,7 @@ ___TEMPLATE_PARAMETERS___
       }
     ],
     "newRowButtonText": "+ Add Event",
-    "help": "Events you add here will not be sent to VWO while streaming events."
+    "help": "Events you add here will not be sent to Wingify while streaming events."
   },
   {
     "type": "SIMPLE_TABLE",
@@ -108,7 +108,7 @@ ___TEMPLATE_PARAMETERS___
         "type": "TEXT"
       }
     ],
-    "help": "Properties you add here will not be sent to VWO while streaming events.",
+    "help": "Properties you add here will not be sent to Wingify while streaming events.",
     "newRowButtonText": "+ Add Property"
   }
 ]
@@ -236,10 +236,10 @@ function getValueByPath(obj, path) {
 }
 
 
-function buildVwoPayload(obj, debug) {
+function buildWingifyPayload(obj, debug) {
   let eventName = "";
   const otherProperties = {};
-  const vwoMeta = {
+  const wingifyMeta = {
     source: "gtm"
   };
   
@@ -257,7 +257,7 @@ function buildVwoPayload(obj, debug) {
         } else {
           eventName = "gtm." + value;
         }
-        vwoMeta.ogName = value;
+        wingifyMeta.ogName = value;
       } else {
         if (!isPropertyExcluded(key)){
           otherProperties[key] = value;
@@ -306,18 +306,18 @@ function buildVwoPayload(obj, debug) {
   return {
     event: eventName,
     props: otherProperties,
-    vwoMeta: vwoMeta
+    wingifyMeta: wingifyMeta
   };
 }
 
 const DLObject = getCurrentEventObject();
 if (DLObject != null) {
   if (debug) logToConsole("Current event object: " + JSON.stringify(DLObject));
-  const VWOPayload = buildVwoPayload(DLObject, debug);
-  if (VWOPayload) {
-    if (debug) logToConsole("VWO Payload: " + JSON.stringify(VWOPayload));
-    const vwoPush = createQueue("VWO");
-    vwoPush(["event", VWOPayload.event, VWOPayload.props, VWOPayload.vwoMeta]);
+  const WingifyPayload = buildWingifyPayload(DLObject, debug);
+  if (WingifyPayload) {
+    if (debug) logToConsole("Wingify Payload: " + JSON.stringify(WingifyPayload));
+    const wingifyPush = createQueue("Wingify");
+    wingifyPush(["event", WingifyPayload.event, WingifyPayload.props, WingifyPayload.wingifyMeta]);
   }
 }
 
@@ -404,7 +404,7 @@ ___WEB_PERMISSIONS___
                 "mapValue": [
                   {
                     "type": 1,
-                    "string": "VWO"
+                    "string": "Wingify"
                   },
                   {
                     "type": 8,
@@ -525,11 +525,400 @@ ___WEB_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
+scenarios:
+- name: Standard custom event is pushed to Wingify queue
+  code: |-
+    let wingifyPush = null;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 42;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'purchase', 'gtm.uniqueEventId': 42, 'revenue': 99.99}];
+      }
+    });
+    mock('createQueue', function(name) {
+      return function(args) { wingifyPush = args; };
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertApi('createQueue').wasCalledWith('Wingify');
+    assertThat(wingifyPush[0]).isEqualTo('event');
+    assertThat(wingifyPush[1]).isEqualTo('gtm.purchase');
+    assertThat(wingifyPush[2].revenue).isEqualTo(99.99);
+    assertThat(wingifyPush[3].source).isEqualTo('gtm');
+    assertThat(wingifyPush[3].ogName).isEqualTo('purchase');
+
+- name: Event already prefixed with gtm prefix is not double-prefixed
+  code: |-
+    let wingifyPush = null;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 43;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'gtm.formSubmit', 'gtm.uniqueEventId': 43}];
+      }
+    });
+    mock('createQueue', function(name) {
+      return function(args) { wingifyPush = args; };
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(wingifyPush[1]).isEqualTo('gtm.formSubmit');
+
+- name: Default reserved event gtm_dom is not pushed to Wingify queue
+  code: |-
+    let queueCreated = false;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 44;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'gtm.dom', 'gtm.uniqueEventId': 44}];
+      }
+    });
+    mock('createQueue', function(name) {
+      queueCreated = true;
+      return function() {};
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(queueCreated).isFalse();
+
+- name: Default reserved event gtm_load is not pushed to Wingify queue
+  code: |-
+    let queueCreated = false;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 45;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'gtm.load', 'gtm.uniqueEventId': 45}];
+      }
+    });
+    mock('createQueue', function(name) {
+      queueCreated = true;
+      return function() {};
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(queueCreated).isFalse();
+
+- name: Default reserved event gtm_js is not pushed to Wingify queue
+  code: |-
+    let queueCreated = false;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 46;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'gtm.js', 'gtm.uniqueEventId': 46}];
+      }
+    });
+    mock('createQueue', function(name) {
+      queueCreated = true;
+      return function() {};
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(queueCreated).isFalse();
+
+- name: User-defined reserved event is not pushed and gtmOnSuccess is still called
+  code: |-
+    let queueCreated = false;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 47;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'internal_test_event', 'gtm.uniqueEventId': 47}];
+      }
+    });
+    mock('createQueue', function(name) {
+      queueCreated = true;
+      return function() {};
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [{eventName: 'internal_test_event'}],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(queueCreated).isFalse();
+
+- name: Excluded property is removed from Wingify payload props
+  code: |-
+    let wingifyPush = null;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 48;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'addToCart', 'gtm.uniqueEventId': 48, 'userId': 'abc123', 'productId': 'xyz789'}];
+      }
+    });
+    mock('createQueue', function(name) {
+      return function(args) { wingifyPush = args; };
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: [{property: 'userId'}]
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(wingifyPush[2].userId).isUndefined();
+    assertThat(wingifyPush[2].productId).isEqualTo('xyz789');
+
+- name: gtm uniqueEventId is always excluded from Wingify payload props
+  code: |-
+    let wingifyPush = null;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 55;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'signup', 'gtm.uniqueEventId': 55, 'plan': 'premium'}];
+      }
+    });
+    mock('createQueue', function(name) {
+      return function(args) { wingifyPush = args; };
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(wingifyPush[2]['gtm.uniqueEventId']).isUndefined();
+    assertThat(wingifyPush[2].plan).isEqualTo('premium');
+
+- name: Nested field mapping extracts value from dot-notation path
+  code: |-
+    let wingifyPush = null;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 49;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{
+          'event': 'checkout',
+          'gtm.uniqueEventId': 49,
+          'ecommerce': {
+            'purchase': {
+              'actionField': {'revenue': 199.99}
+            }
+          }
+        }];
+      }
+    });
+    mock('createQueue', function(name) {
+      return function(args) { wingifyPush = args; };
+    });
+    const mockData = {
+      nestedFieldsMapping: [{json_key_name: 'revenue', json_key_path: 'ecommerce.purchase.actionField.revenue'}],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(wingifyPush[2].revenue).isEqualTo(199.99);
+
+- name: Nested field mapping with array index notation extracts correct value
+  code: |-
+    let wingifyPush = null;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 50;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{
+          'event': 'productView',
+          'gtm.uniqueEventId': 50,
+          'ecommerce': {
+            'products': [
+              {'name': 'Widget Pro', 'price': 29.99}
+            ]
+          }
+        }];
+      }
+    });
+    mock('createQueue', function(name) {
+      return function(args) { wingifyPush = args; };
+    });
+    const mockData = {
+      nestedFieldsMapping: [{json_key_name: 'firstProductName', json_key_path: 'ecommerce.products[0].name'}],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(wingifyPush[2].firstProductName).isEqualTo('Widget Pro');
+
+- name: Custom properties are added to Wingify payload
+  code: |-
+    let wingifyPush = null;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 51;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'login', 'gtm.uniqueEventId': 51}];
+      }
+    });
+    mock('createQueue', function(name) {
+      return function(args) { wingifyPush = args; };
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [{property_name: 'app_version', property_value: '2.1.0'}],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(wingifyPush[2].app_version).isEqualTo('2.1.0');
+
+- name: gtag eventModel path is used when eventModel exists in dataLayer
+  code: |-
+    let wingifyPush = null;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return {'currency': 'USD', 'value': 49.99};
+      if (key === 'event') return 'addToCart';
+      return undefined;
+    });
+    mock('createQueue', function(name) {
+      return function(args) { wingifyPush = args; };
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertApi('createQueue').wasCalledWith('Wingify');
+    assertThat(wingifyPush[1]).isEqualTo('gtm.addToCart');
+    assertThat(wingifyPush[2].currency).isEqualTo('USD');
+    assertThat(wingifyPush[2].value).isEqualTo(49.99);
+    assertThat(wingifyPush[3].ogName).isEqualTo('addToCart');
+
+- name: No matching event in dataLayer calls gtmOnSuccess without pushing to queue
+  code: |-
+    let queueCreated = false;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 99;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'event': 'otherEvent', 'gtm.uniqueEventId': 1}];
+      }
+    });
+    mock('createQueue', function(name) {
+      queueCreated = true;
+      return function() {};
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(queueCreated).isFalse();
+
+- name: Event object without event key is ignored and gtmOnSuccess is called
+  code: |-
+    let queueCreated = false;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'eventModel') return undefined;
+      if (key === 'gtm.uniqueEventId') return 60;
+      return undefined;
+    });
+    mock('copyFromWindow', function(key) {
+      if (key === 'dataLayer') {
+        return [{'someProperty': 'value', 'gtm.uniqueEventId': 60}];
+      }
+    });
+    mock('createQueue', function(name) {
+      queueCreated = true;
+      return function() {};
+    });
+    const mockData = {
+      nestedFieldsMapping: [],
+      customProperties: [],
+      reservedEventNames: [],
+      reservedProperties: []
+    };
+    runCode(mockData);
+    assertApi('gtmOnSuccess').wasCalled();
+    assertThat(queueCreated).isFalse();
 
 
 ___NOTES___
 
 Created on 12/07/2023, 18:34:33
-
-
