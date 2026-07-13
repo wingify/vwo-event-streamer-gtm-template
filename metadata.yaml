@@ -1,8 +1,6 @@
 homepage: "https://vwo.com"
 documentation: "https://help.vwo.com/hc/en-us/articles/15595250852761-Integrating-VWO-with-Google-Tag-Manager-GTM-"
 versions:
-  - sha: 0a555586d5464d52490184e05b0915ff7548fa0f
-    changeNotes: Updated branding in template.tpl to Wingify and added test cases for the code template.
   - sha: 1b5be111f3a1ff2e1104b783afae516cf99ee06e
     changeNotes: Add support for gtag event.
       Add support for Nested JSON property. 
