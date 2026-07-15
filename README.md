@@ -10,6 +10,18 @@ VWO Event Streamer is a custom tag template that you can import into your GTM ac
 
 Setup guide is available at: [https://help.vwo.com/hc/en-us/articles/21918784065433](https://help.vwo.com/hc/en-us/articles/21918784065433)
 
+## Testing
+
+Template test cases are a valid proof of testing for the template logic — they run the tag functions in GTM’s sandbox environment and verify expected behavior there.
+
+However, sandbox tests alone are not sufficient for a production-ready change. Always also:
+
+1. Import or update the template in a real GTM container.
+2. Configure and fire the tag against a live (or staging) site with VWO/Wingify installed.
+3. Confirm events and properties are received correctly in VWO/Wingify.
+
+Treat automated sandbox tests as coverage of unit-level behavior, and manual end-to-end testing in a real environment as a required final check before release.
+
 ## Code of Conduct
 
 [Code of Conduct](https://github.com/wingify/vwo-event-streamer-gtm-template/blob/master/CODE_OF_CONDUCT.md)
