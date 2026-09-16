@@ -1,5 +1,5 @@
-homepage: "https://vwo.com"
-documentation: "https://help.vwo.com/hc/en-us/articles/15595250852761-Integrating-VWO-with-Google-Tag-Manager-GTM-"
+homepage: "https://wingify.com"
+documentation: "https://help.wingify.com/hc/en-us/articles/60386723227161-Integrate-Wingify-with-Google-Tag-Manager"
 versions:
   - sha: 5f1c83cb7f4f913fbacbdbcfe27e85e3ea06a9bd
     changeNotes: Rebrand template to Wingify and grant VWO globals access.
