@@ -1,14 +1,14 @@
-# VWO Event Streamer GTM Template
+# Wingify Event Streamer GTM Template
 
-VWO Event Streamer is a custom tag template that you can import into your GTM account in order to stream custom events from GTM to VWO. This is an effortless approach if you just require fetching custom events from GTM to VWO. You just need to install the VWO streamer as a template on GTM and configure the events to be sent to VWO from GTM. 
+Wingify Event Streamer is a custom tag template that you can import into your GTM account in order to stream custom events from GTM to Wingify (formerly VWO & AB Tasty). Install the Wingify streamer as a template on GTM and configure the events to be sent to Wingify from GTM. 
 
 ### The following features are available :
 
-1. All custom events from GTM along with their properties can be forwarded/streamed to VWO. Further, these events can be used in VWO to run tests and campaigns.
-2. Option to exclude events from being sent to VWO.
-3. Option to exclude properties from being sent to VWO.
+1. All custom events from GTM along with their properties can be forwarded/streamed to Wingify. Further, these events can be used in Wingify to run tests and campaigns.
+2. Option to exclude events from being sent to Wingify.
+3. Option to exclude properties from being sent to Wingify.
 
-Setup guide is available at: [https://help.vwo.com/hc/en-us/articles/21918784065433](https://help.vwo.com/hc/en-us/articles/21918784065433)
+Setup guide is available at: [https://help.wingify.com/hc/en-us/articles/58832481445913-Stream-Events-From-GTM-to-Wingify](https://help.wingify.com/hc/en-us/articles/58832481445913-Stream-Events-From-GTM-to-Wingify)
 
 ## Testing
 
