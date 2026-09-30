@@ -200,7 +200,7 @@ const getUrl = require('getUrl');
 const makeInteger = require('makeInteger');
 const getTimestampMillis = require('getTimestampMillis');
 
-const WINGIFY_HELPER_SCRIPT_URL = "https://class-live-launched-eminem.trycloudflare.com/wingify_gtm_helper.js";
+const WINGIFY_HELPER_SCRIPT_URL = "https://edge.wingify.net/cdn/integrations/wingify_gtm_helper.js";
 
 let debug = false;
 
@@ -763,7 +763,7 @@ ___WEB_PERMISSIONS___
             "listItem": [
               {
                 "type": 1,
-                "string": "https://class-live-launched-eminem.trycloudflare.com/wingify_gtm_helper.js"
+                "string": "https://edge.wingify.net/cdn/integrations/wingify_gtm_helper.js"
               }
             ]
           }

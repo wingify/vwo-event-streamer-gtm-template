@@ -12,7 +12,7 @@ Setup guide is available at: [https://help.wingify.com/hc/en-us/articles/5883248
 
 Each event is pushed to both the VWO and Wingify on-page queues. When **Send Events for Feature Experiments or Offline Conversions** is enabled, the tag also posts that event to `https://edge.wingify.net`.
 
-**Content Security Policy:** Some sites block these requests. Allow the Wingify domain in the page policy, including `https://*.wingify.com` and `https://edge.wingify.net` (US, plus `/eu01` and `/as01` for the other regions). Add `https://edge.wingify.net` to `connect-src`. Without that, the event POST can be blocked.
+**Content Security Policy:** Some sites block these requests. Allow the Wingify domain in the page policy, including `https://*.wingify.com` and `https://edge.wingify.net` (US, plus `/eu01` and `/as01` for the other regions). Add `https://edge.wingify.net` to `script-src` and `connect-src`. Without that, the helper script or the event POST can be blocked.
 
 
 ## Testing
