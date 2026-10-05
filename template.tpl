@@ -322,19 +322,18 @@ function buildVwoPayload(obj, debug) {
     }
 
     if (obj.hasOwnProperty(key)) {
-      const value = obj[key] || '';
+      const rawValue = obj[key];
 
       if (key === "event") {
+        const value = typeof rawValue === "string" ? rawValue : "";
         if (value.slice(0, 4) == 'gtm.') {
           eventName = value;
         } else {
           eventName = "gtm." + value;
         }
         vwoMeta.ogName = value;
-      } else {
-        if (!isPropertyExcluded(key)){
-          otherProperties[key] = value;
-        }
+      } else if (!isPropertyExcluded(key)) {
+        otherProperties[key] = (rawValue === undefined || rawValue === null) ? "" : rawValue;
       }
     }
   }
