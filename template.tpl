@@ -34,6 +34,75 @@ ___TEMPLATE_PARAMETERS___
 
 [
   {
+    "type": "CHECKBOX",
+    "name": "smartCodeEnabled",
+    "checkboxText": "Send Events for Feature Experiments or Offline Conversions",
+    "simpleValueType": true,
+    "help": "Also posts the event to https://edge.wingify.net. Events are still pushed to both on-page queues. Account ID, region, and visitor ID are required.",
+    "defaultValue": false,
+    "subParams": [
+      {
+        "type": "TEXT",
+        "name": "accountId",
+        "displayName": "Account Id",
+        "simpleValueType": true,
+        "help": "Account ID. Required when sending events through the API.",
+        "valueHint": "Your account ID",
+        "enablingConditions": [
+          {
+            "paramName": "smartCodeEnabled",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ]
+      },
+      {
+        "type": "SELECT",
+        "name": "region",
+        "displayName": "Region",
+        "macrosInSelect": false,
+        "selectItems": [
+          {
+            "value": "eu",
+            "displayValue": "EU"
+          },
+          {
+            "value": "as",
+            "displayValue": "India"
+          },
+          {
+            "value": "us",
+            "displayValue": "US ( Default )"
+          }
+        ],
+        "simpleValueType": true,
+        "help": "Account data region. In Settings => General Info => Data region.",
+        "defaultValue": "us",
+        "enablingConditions": [
+          {
+            "paramName": "smartCodeEnabled",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ]
+      },
+      {
+        "type": "TEXT",
+        "name": "visitorId",
+        "displayName": "Visitor ID",
+        "simpleValueType": true,
+        "help": "Visitor ID sent with the event. Required when sending events through the API.",
+        "enablingConditions": [
+          {
+            "paramName": "smartCodeEnabled",
+            "paramValue": true,
+            "type": "EQUALS"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "type": "SIMPLE_TABLE",
     "name": "nestedFieldsMapping",
     "displayName": "Nested JSON Field Mapping",
@@ -121,6 +190,8 @@ const DATALAYER_VARIABLE_NAME = "dataLayer";
 const copyFromDataLayer = require("copyFromDataLayer");
 const copyFromWindow = require("copyFromWindow");
 const createQueue = require("createQueue");
+const injectScript = require("injectScript");
+const callInWindow = require("callInWindow");
 const getType = require("getType");
 const logToConsole = require("logToConsole");
 const JSON = require('JSON');
@@ -128,6 +199,8 @@ const queryPermission = require('queryPermission');
 const getUrl = require('getUrl');
 const makeInteger = require('makeInteger');
 const getTimestampMillis = require('getTimestampMillis');
+
+const WINGIFY_HELPER_SCRIPT_URL = "https://edge.wingify.net/cdn/integrations/wingify_gtm_helper.js";
 
 let debug = false;
 
@@ -309,19 +382,97 @@ function buildVwoPayload(obj, debug) {
   };
 }
 
-const DLObject = getCurrentEventObject();
-if (DLObject != null) {
-  if (debug) logToConsole("Current event object: " + JSON.stringify(DLObject));
-  const VWOPayload = buildVwoPayload(DLObject, debug);
-  if (VWOPayload) {
-    if (debug) logToConsole("Wingify Payload: " + JSON.stringify(VWOPayload));
-    const vwoPush = createQueue("VWO");
-    vwoPush(["event", VWOPayload.event, VWOPayload.props, VWOPayload.vwoMeta]);
-  }
+function helperRegion(region) {
+  const value = ("" + (region || "")).toLowerCase();
+  if (value === "eu") return "eu";
+  if (value === "as" || value === "in") return "in";
+  return "";
 }
 
+function pushToBothQueues(payload) {
+  const vwoPush = createQueue("VWO");
+  vwoPush(["event", payload.event, payload.props, payload.vwoMeta]);
+  const wingifyPush = createQueue("Wingify");
+  wingifyPush(["event", payload.event, payload.props, payload.vwoMeta]);
+}
+
+function callCollectHelper(scriptUrl, functionName, payload, accountId, visitorId, region, onDone) {
+  injectScript(
+    scriptUrl,
+    function onSuccess() {
+      if (!copyFromWindow(functionName)) {
+        if (debug) logToConsole(functionName + " function missing.");
+        onDone(false);
+        return;
+      }
+
+      if (debug) logToConsole("Sending via " + functionName + ": " + payload.event);
+      callInWindow(
+        functionName,
+        accountId,
+        payload.event,
+        visitorId,
+        region,
+        JSON.stringify(payload.props)
+      );
+      onDone(true);
+    },
+    function onFailure() {
+      if (debug) logToConsole("Helper script failed to load: " + scriptUrl);
+      onDone(false);
+    }
+  );
+}
+
+function sendThroughApi(payload) {
+  const accountId = data.accountId;
+  const visitorId = data.visitorId || "";
+  const region = helperRegion(data.region || "");
+
+  if (!accountId || !visitorId) {
+    if (debug) logToConsole("Account ID and Visitor ID are required to send events through the API.");
+    data.gtmOnFailure();
+    return;
+  }
+
+  callCollectHelper(
+    WINGIFY_HELPER_SCRIPT_URL,
+    "wingifyPushEvent",
+    payload,
+    accountId,
+    visitorId,
+    region,
+    function onDone(ok) {
+      if (ok) data.gtmOnSuccess();
+      else data.gtmOnFailure();
+    }
+  );
+}
+
+const DLObject = getCurrentEventObject();
+if (!DLObject) {
+  if (debug) logToConsole("No valid event object found.");
+  data.gtmOnSuccess();
+  return;
+}
+
+if (debug) logToConsole("Current event object: " + JSON.stringify(DLObject));
+const VWOPayload = buildVwoPayload(DLObject, debug);
+if (!VWOPayload) {
+  data.gtmOnSuccess();
+  return;
+}
+
+if (debug) logToConsole("Wingify Payload: " + JSON.stringify(VWOPayload));
 if (debug) logToConsole("Nested Fields Mapping: " + JSON.stringify(data.nestedFieldsMapping));
 if (debug) logToConsole("Custom Properties: " + JSON.stringify(data.customProperties));
+
+pushToBothQueues(VWOPayload);
+
+if (data.smartCodeEnabled) {
+  sendThroughApi(VWOPayload);
+  return;
+}
 
 data.gtmOnSuccess();
 
@@ -457,6 +608,45 @@ ___WEB_PERMISSIONS___
                     "boolean": true
                   }
                 ]
+              },
+              {
+                "type": 3,
+                "mapKey": [
+                  {
+                    "type": 1,
+                    "string": "key"
+                  },
+                  {
+                    "type": 1,
+                    "string": "read"
+                  },
+                  {
+                    "type": 1,
+                    "string": "write"
+                  },
+                  {
+                    "type": 1,
+                    "string": "execute"
+                  }
+                ],
+                "mapValue": [
+                  {
+                    "type": 1,
+                    "string": "wingifyPushEvent"
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  },
+                  {
+                    "type": 8,
+                    "boolean": false
+                  },
+                  {
+                    "type": 8,
+                    "boolean": true
+                  }
+                ]
               }
             ]
           }
@@ -549,6 +739,32 @@ ___WEB_PERMISSIONS___
           "value": {
             "type": 1,
             "string": "any"
+          }
+        }
+      ]
+    },
+    "clientAnnotations": {
+      "isEditedByUser": true
+    },
+    "isRequired": true
+  },
+  {
+    "instance": {
+      "key": {
+        "publicId": "inject_script",
+        "versionId": "1"
+      },
+      "param": [
+        {
+          "key": "urls",
+          "value": {
+            "type": 2,
+            "listItem": [
+              {
+                "type": 1,
+                "string": "https://edge.wingify.net/cdn/integrations/wingify_gtm_helper.js"
+              }
+            ]
           }
         }
       ]

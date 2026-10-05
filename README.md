@@ -10,6 +10,11 @@ Wingify Event Streamer is a custom tag template that you can import into your GT
 
 Setup guide is available at: [https://help.wingify.com/hc/en-us/articles/58832481445913-Stream-Events-From-GTM-to-Wingify](https://help.wingify.com/hc/en-us/articles/58832481445913-Stream-Events-From-GTM-to-Wingify)
 
+Each event is pushed to both the VWO and Wingify on-page queues. When **Send Events for Feature Experiments or Offline Conversions** is enabled, the tag also posts that event to `https://edge.wingify.net`.
+
+**Content Security Policy:** Some sites block these requests. Allow the Wingify domain in the page policy, including `https://*.wingify.com` and `https://edge.wingify.net` (US, plus `/eu01` and `/as01` for the other regions). Add `https://edge.wingify.net` to `script-src` and `connect-src`. Without that, the helper script or the event POST can be blocked.
+
+
 ## Testing
 
 Template test cases are a valid proof of testing for the template logic — they run the tag functions in GTM’s sandbox environment and verify expected behavior there.
