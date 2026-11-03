@@ -52,11 +52,11 @@ ___TEMPLATE_PARAMETERS___
         "name": "json_key_path",
         "type": "TEXT",
         "isUnique": true,
-        "valueHint": "E.g., ecommerce.purchase.actionfield.revenue"
+        "valueHint": "E.g., items[].price or items[].price.sum()"
       }
     ],
     "newRowButtonText": "+ Add Field Mapping",
-    "help": "Specify the name and path of the nested property within the event you want to send to Wingify."
+    "help": "Path to a nested value, such as ecommerce.purchase.actionfield.revenue or items[0].price. Use items[].price to send every match as comma-separated text. Append .sum() to add the numbers or .count() to count them, for example items[].price.sum()."
   },
   {
     "type": "SIMPLE_TABLE",
@@ -127,6 +127,7 @@ const JSON = require('JSON');
 const queryPermission = require('queryPermission');
 const getUrl = require('getUrl');
 const makeInteger = require('makeInteger');
+const makeNumber = require('makeNumber');
 const getTimestampMillis = require('getTimestampMillis');
 
 let debug = false;
@@ -214,25 +215,202 @@ function getCurrentEventObject() {
   return object; 
 }
 
-function getValueByPath(obj, path) {
-  const sanitizedPath = path.split('[').join('.').split(']').join('');
-  const parts = sanitizedPath.split(".").filter(x => x.length); 
-  let current = obj;
+function parsePathExpression(path) {
+  const trimmed = path.trim();
+  if (trimmed.slice(-6) === '.sum()') {
+    return { operation: 'sum', body: trimmed.slice(0, -6) };
+  }
+  if (trimmed.slice(-8) === '.count()') {
+    return { operation: 'count', body: trimmed.slice(0, -8) };
+  }
+  return { operation: '', body: trimmed };
+}
+
+function tokenizePath(path) {
+  const parts = [];
+  let current = '';
+  for (let i = 0; i < path.length; i++) {
+    const ch = path.charAt(i);
+    if (ch === '.') {
+      if (current.length) {
+        parts.push(current);
+        current = '';
+      }
+    } else if (ch === '[') {
+      if (current.length) {
+        parts.push(current);
+        current = '';
+      }
+      const close = path.indexOf(']', i);
+      if (close === -1) {
+        return [];
+      }
+      const inside = path.slice(i + 1, close).trim();
+      parts.push(inside.length ? inside : '[]');
+      i = close;
+    } else {
+      current += ch;
+    }
+  }
+  if (current.length) {
+    parts.push(current);
+  }
+  return parts;
+}
+
+function pathHasWildcard(parts) {
   for (let i = 0; i < parts.length; i++) {
-    if (getType(current) == 'array') {
-      const index = makeInteger(parts[i]);
-      if ( getType(index) != 'number' || index < 0 || index >= current.length) {
+    if (parts[i] === '[]') {
+      return true;
+    }
+  }
+  return false;
+}
+
+function readScalarPath(current, parts) {
+  for (let i = 0; i < parts.length; i++) {
+    if (getType(current) === 'undefined' || getType(current) === 'null') {
+      return undefined;
+    }
+    const part = parts[i];
+    if (getType(current) === 'array') {
+      const index = makeInteger(part);
+      if (getType(index) !== 'number' || index < 0 || index >= current.length) {
         return undefined;
       }
       current = current[index];
+    } else if (current[part] === undefined) {
+      return undefined;
     } else {
-      if (current[parts[i]] === undefined) {
-        return undefined;
-      }
-      current = current[parts[i]];
+      current = current[part];
     }
   }
   return current;
+}
+
+function collectMatches(node, parts, index, matches, state) {
+  if (getType(node) === 'undefined' || getType(node) === 'null') {
+    return;
+  }
+  if (index >= parts.length) {
+    matches.push(node);
+    return;
+  }
+
+  const part = parts[index];
+  if (part === '[]') {
+    if (getType(node) !== 'array') {
+      return;
+    }
+    state.arrayFound = true;
+    for (let n = 0; n < node.length; n++) {
+      collectMatches(node[n], parts, index + 1, matches, state);
+    }
+    return;
+  }
+
+  if (getType(node) === 'array') {
+    const itemIndex = makeInteger(part);
+    if (getType(itemIndex) !== 'number' || itemIndex < 0 || itemIndex >= node.length) {
+      return;
+    }
+    collectMatches(node[itemIndex], parts, index + 1, matches, state);
+    return;
+  }
+
+  if (node[part] === undefined) {
+    return;
+  }
+  collectMatches(node[part], parts, index + 1, matches, state);
+}
+
+function toFiniteNumber(value) {
+  const type = getType(value);
+  if (type === 'number') {
+    return value;
+  }
+  if (type === 'string' && value.trim() !== '') {
+    const num = makeNumber(value);
+    if (getType(num) === 'number') {
+      return num;
+    }
+  }
+  return undefined;
+}
+
+function csvCell(value) {
+  let text;
+  const type = getType(value);
+  if (type === 'object' || type === 'array') {
+    text = JSON.stringify(value);
+  } else {
+    text = '' + value;
+  }
+  if (text.indexOf(',') !== -1 || text.indexOf('"') !== -1 || text.indexOf('\n') !== -1) {
+    text = '"' + text.split('"').join('""') + '"';
+  }
+  return text;
+}
+
+function valuesToCsv(values) {
+  let csv = '';
+  for (let i = 0; i < values.length; i++) {
+    if (i > 0) {
+      csv += ',';
+    }
+    csv += csvCell(values[i]);
+  }
+  return csv;
+}
+
+function sumValues(values) {
+  let total = 0;
+  for (let i = 0; i < values.length; i++) {
+    const num = toFiniteNumber(values[i]);
+    if (getType(num) === 'number') {
+      total += num;
+    }
+  }
+  return total;
+}
+
+function getValueByPath(obj, path) {
+  const parsed = parsePathExpression(path);
+  const parts = tokenizePath(parsed.body);
+  if (!parts.length) {
+    return undefined;
+  }
+
+  if (!pathHasWildcard(parts)) {
+    const value = readScalarPath(obj, parts);
+    if (!parsed.operation) {
+      return value;
+    }
+    if (value === undefined) {
+      return undefined;
+    }
+    if (parsed.operation === 'count') {
+      return 1;
+    }
+    return toFiniteNumber(value);
+  }
+
+  const matches = [];
+  const state = { arrayFound: false };
+  collectMatches(obj, parts, 0, matches, state);
+  if (!state.arrayFound) {
+    return undefined;
+  }
+  if (parsed.operation === 'count') {
+    return matches.length;
+  }
+  if (parsed.operation === 'sum') {
+    return sumValues(matches);
+  }
+  if (!matches.length) {
+    return undefined;
+  }
+  return valuesToCsv(matches);
 }
 
 
@@ -563,7 +741,149 @@ ___WEB_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
+setup: |-
+  function captureEvent(eventObject) {
+    let pushed;
+    mock('copyFromDataLayer', function(key) {
+      if (key === 'gtm.uniqueEventId') {
+        return eventObject['gtm.uniqueEventId'];
+      }
+      return undefined;
+    });
+    mock('copyFromWindow', function() {
+      return [eventObject];
+    });
+    mock('createQueue', function() {
+      return function(payload) {
+        pushed = payload;
+      };
+    });
+    mock('logToConsole', function() {});
+    mock('getTimestampMillis', function() {
+      return 1;
+    });
+    return function() {
+      return pushed;
+    };
+  }
+
+  const purchase = {
+    event: 'purchase',
+    'gtm.uniqueEventId': 1,
+    ecommerce: {
+      purchase: {
+        actionfield: { revenue: 42 }
+      },
+      items: [
+        { price: 10, name: 'hat' },
+        { price: 0, name: 'free, gift' },
+        { price: false, name: 'nope' },
+        { name: 'missing price' }
+      ]
+    }
+  };
+
+scenarios:
+- name: Returns every array value as CSV
+  code: |-
+    const pushed = captureEvent(purchase);
+    runCode({
+      nestedFieldsMapping: [{
+        json_key_name: 'item_prices',
+        json_key_path: 'ecommerce.items[].price'
+      }]
+    });
+    assertThat(pushed()[2].item_prices).isEqualTo('10,0,false');
+    assertApi('gtmOnSuccess').wasCalled();
+- name: Sums numeric array values and ignores the rest
+  code: |-
+    const pushed = captureEvent(purchase);
+    runCode({
+      nestedFieldsMapping: [{
+        json_key_name: 'price_sum',
+        json_key_path: 'ecommerce.items[].price.sum()'
+      }]
+    });
+    assertThat(pushed()[2].price_sum).isEqualTo(10);
+- name: Counts values collected from an array
+  code: |-
+    const pushed = captureEvent(purchase);
+    runCode({
+      nestedFieldsMapping: [{
+        json_key_name: 'price_count',
+        json_key_path: 'ecommerce.items[].price.count()'
+      }]
+    });
+    assertThat(pushed()[2].price_count).isEqualTo(3);
+- name: Quotes CSV cells that contain a comma
+  code: |-
+    const pushed = captureEvent(purchase);
+    runCode({
+      nestedFieldsMapping: [{
+        json_key_name: 'item_names',
+        json_key_path: 'ecommerce.items[].name'
+      }]
+    });
+    assertThat(pushed()[2].item_names).isEqualTo('hat,"free, gift",nope,missing price');
+- name: Keeps a single indexed path as its original value
+  code: |-
+    const pushed = captureEvent(purchase);
+    runCode({
+      nestedFieldsMapping: [{
+        json_key_name: 'first_price',
+        json_key_path: 'ecommerce.items[0].price'
+      }]
+    });
+    assertThat(pushed()[2].first_price).isEqualTo(10);
+- name: Keeps a dotted object path unchanged
+  code: |-
+    const pushed = captureEvent(purchase);
+    runCode({
+      nestedFieldsMapping: [{
+        json_key_name: 'revenue',
+        json_key_path: 'ecommerce.purchase.actionfield.revenue'
+      }]
+    });
+    assertThat(pushed()[2].revenue).isEqualTo(42);
+- name: Returns zero when sum or count runs on an empty array
+  code: |-
+    const pushed = captureEvent({
+      event: 'view_item_list',
+      'gtm.uniqueEventId': 2,
+      items: []
+    });
+    runCode({
+      nestedFieldsMapping: [{
+        json_key_name: 'price_sum',
+        json_key_path: 'items[].price.sum()'
+      }, {
+        json_key_name: 'price_count',
+        json_key_path: 'items[].price.count()'
+      }, {
+        json_key_name: 'prices',
+        json_key_path: 'items[].price'
+      }]
+    });
+    assertThat(pushed()[2].price_sum).isEqualTo(0);
+    assertThat(pushed()[2].price_count).isEqualTo(0);
+    assertThat(pushed()[2].prices).isUndefined();
+- name: Sums prices nested in more than one array
+  code: |-
+    const pushed = captureEvent({
+      event: 'purchase',
+      'gtm.uniqueEventId': 3,
+      orders: [
+        { items: [{ price: 5 }, { price: '7' }] },
+        { items: [{ price: 8 }] }
+      ]
+    });
+    runCode({
+      nestedFieldsMapping: [{
+        json_key_name: 'price_sum',
+        json_key_path: 'orders[].items[].price.sum()'
+      }]
+    });
+    assertThat(pushed()[2].price_sum).isEqualTo(20);
 
 
 ___NOTES___
