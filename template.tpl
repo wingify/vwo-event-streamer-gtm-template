@@ -52,7 +52,7 @@ ___TEMPLATE_PARAMETERS___
         "name": "json_key_path",
         "type": "TEXT",
         "isUnique": true,
-        "valueHint": "E.g., items[].price or items[].price.sum()"
+        "valueHint": "E.g., ecommerce.purchase.actionfield.revenue"
       }
     ],
     "newRowButtonText": "+ Add Field Mapping",
